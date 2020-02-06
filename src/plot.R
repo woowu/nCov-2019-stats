@@ -1,8 +1,8 @@
 #!/usr/bin/Rscript
 library(ggplot2);
-library(scales);
-#library(viridis);
+library(viridisLite);
 library(RColorBrewer);
+library(reshape2);
 
 args <- commandArgs(trailingOnly = TRUE)
 

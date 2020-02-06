@@ -1,8 +1,8 @@
 #!/usr/bin/Rscript
 library(ggplot2);
-library(scales);
-#library(viridis);
+library(viridisLite);
 library(RColorBrewer);
+library(reshape2);
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -30,7 +30,7 @@ p <- ggplot(dat, aes(x = date, y = value)) +
           legend.margin = margin(6, 6, 6, 6),
           legend.key.size = unit(1, 'cm'),
           legend.text = element_text(size=18)) +
-    labs(title = title, x = '', y = 'log10');
+    labs(title = title, x = '', y = '');
 
 ggsave(plot = p, file = paste(basename, '.svg', sep = '')
        , width = 21, height = 10);

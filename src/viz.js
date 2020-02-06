@@ -36,30 +36,46 @@ const timeSeriesAppend = (series, d) => {
         series.prev.confirmedIncr = 0;
         series.prev.curedIncr = 0;
         series.prev.deadIncr = 0;
-        d.confirmedDerivertive = 0;
+        d.deltaConfirmed = 0;
     } else {
         series.prev.confirmedIncr = series.prev.confirmedCount - d.confirmedCount;
         series.prev.curedIncr = series.prev.curedCount - d.curedCount;
         series.prev.deadIncr = series.prev.deadCount - d.deadCount;
-        d.confirmedDerivertive = series.prev.confirmedIncr;
+        d.deltaConfirmed = series.prev.confirmedIncr;
         series.prev = d;
     }
     series.resolved.push(d);
 };
 
-const appendCsv = (series, fields, stream) => {
+const dataSetToCsv = (series, fields) => {
+    var lines = '';
     series.forEach((d, i) => {
         fields.forEach(f => {
-            stream.write(d.time + ',');
-            stream.write('"' + d.localeTime + '",');
-            stream.write(d.date + ',');
-            stream.write(f[1] + ',');
+            lines += d.date + ',';
+            lines += f[1] + ',';
             if (typeof f[0] == 'function')
-                stream.write(f[0](d) + '\n');
+                lines += f[0](d).toString();
             else
-                stream.write(d[f[0]] + '\n');
+                lines += d[f[0]].toString();
+            lines += ' #' + d.localeTime + '\n';
         });
     });
+    return lines;
+};
+
+const dataSetToCsv2 = (series, fields) => {
+    var lines = '';
+    series.forEach((d, i) => {
+        lines += d.date;
+        fields.forEach(f => {
+            if (typeof f[0] == 'function')
+                lines += ',' + f[0](d);
+            else
+                lines += ',' + d[f[0]];
+        });
+        lines += '\n';
+    });
+    return lines;
 };
 
 const plotCsv = (script, csv) => {
@@ -95,16 +111,15 @@ const overall = (hist) => {
     const csv = 'overall-daily.csv';
     const ws = fs.createWriteStream(csv);
     ws.write('# 2019-nCov 全国\n');
-    ws.write('time,localeTime,date,name,value\n');
-    appendCsv(series.resolved,
+    ws.write('date,name,value\n');
+    ws.write(dataSetToCsv(series.resolved,
         [
             ['suspectedCount', '疑似'],
             ['confirmedCount', '确诊'],
             ['curedCount', '治愈'],
             ['deadCount', '死亡'],
             [d => { return d.confirmedCount + d.suspectedCount; }, '疑似+确诊'],
-        ],
-        ws);
+        ]));
     ws.end();
     plotCsv('./src/plot.R', csv);
 };
@@ -169,28 +184,26 @@ const area = (hist) => {
     var csv = 'area-daily.csv';
     var ws = fs.createWriteStream(csv);
     ws.write('# 2019-nCov 确诊\n');
-    ws.write('time,localeTime,date,name,value\n');
+    ws.write('date,name,value\n');
     provinceFilter.forEach(p => {
-        appendCsv(provinceData[p].resolved,
+        ws.write(dataSetToCsv(provinceData[p].resolved,
             [
                 ['confirmedCount', provinceData[p].title],
-            ],
-            ws);
+            ]));
     });
     ws.end();
-    plotCsv('./src/plot.R', csv);
+    plotCsv('./src/plotl.R', csv);
 
     var csv = 'area-derivertive.csv';
     var ws = fs.createWriteStream(csv);
     ws.write('# 2019-nCov 新增确诊\n');
-    ws.write('time,localeTime,date,name,value\n');
+    ws.write('date,name,value\n');
     provinceFilter.forEach(p => {
         const noLast = provinceData[p].resolved.slice(1);
-        appendCsv(noLast,
+        ws.write(dataSetToCsv(noLast,
             [
-                ['confirmedDerivertive', provinceData[p].title],
-            ],
-            ws);
+                ['deltaConfirmed', provinceData[p].title],
+            ]));
     });
     ws.end();
     plotCsv('./src/plotl.R', csv);
