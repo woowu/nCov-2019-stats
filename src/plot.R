@@ -12,10 +12,10 @@ basename <- substring(csv, 1, nchar(csv) - 4)
 title <- substring(readLines(csv)[1], 3)
 
 dat <- read.csv(csv, comment.char = '#')
-dat$date <- as.Date(as.POSIXct(dat$date, origin='1970-01-01'));
+dat$time <- as.Date(as.POSIXct(dat$time, origin='1970-01-01'));
 
 theme_set(theme_gray(base_size = 28))
-p <- ggplot(dat, aes(x = date, y = value)) +
+p <- ggplot(dat, aes(x = time, y = value)) +
     geom_line(aes(color = name), size = 1) +
     scale_x_date(date_breaks = 'days', date_labels = '%d %b') +
     scale_color_brewer(palette = 'Dark2') +

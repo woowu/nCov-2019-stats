@@ -22,28 +22,14 @@ const timeSeriesAppend = (series, d) => {
     /* time provides a stand time-stamp */
     d.time = parseInt(d.updateTime / 1000);
     d.localeTime = moment(d.updateTime).format('YYYY-MM-DD HH:mm:ss');
-    /* date is time converted to the beginning of the day */
-    d.date = parseInt(
-        moment(moment(d.updateTime).format('YYYY-MM-DDT00:00:00'))
-        .valueOf() / 1000
-    );
 
     if (ymd == series.ymd) return;
     series.ymd = ymd;
 
-    if (! series.prev) {
-        series.prev = d;
-        series.prev.confirmedIncr = 0;
-        series.prev.curedIncr = 0;
-        series.prev.deadIncr = 0;
-        d.deltaConfirmed = 0;
-    } else {
+    d.confirmedIncr = 0;
+    if (series.prev)
         series.prev.confirmedIncr = series.prev.confirmedCount - d.confirmedCount;
-        series.prev.curedIncr = series.prev.curedCount - d.curedCount;
-        series.prev.deadIncr = series.prev.deadCount - d.deadCount;
-        d.deltaConfirmed = series.prev.confirmedIncr;
-        series.prev = d;
-    }
+    series.prev = d;
     series.resolved.push(d);
 };
 
@@ -51,7 +37,7 @@ const dataSetToCsv = (series, fields) => {
     var lines = '';
     series.forEach((d, i) => {
         fields.forEach(f => {
-            lines += d.date + ',';
+            lines += d.time + ',';
             lines += f[1] + ',';
             if (typeof f[0] == 'function')
                 lines += f[0](d).toString();
@@ -66,7 +52,7 @@ const dataSetToCsv = (series, fields) => {
 const dataSetToCsv2 = (series, fields) => {
     var lines = '';
     series.forEach((d, i) => {
-        lines += d.date;
+        lines += d.time;
         fields.forEach(f => {
             if (typeof f[0] == 'function')
                 lines += ',' + f[0](d);
@@ -111,7 +97,7 @@ const overall = (hist) => {
     const csv = 'overall-daily.csv';
     const ws = fs.createWriteStream(csv);
     ws.write('# 2019-nCov 全国\n');
-    ws.write('date,name,value\n');
+    ws.write('time,name,value\n');
     ws.write(dataSetToCsv(series.resolved,
         [
             ['suspectedCount', '疑似'],
@@ -124,7 +110,7 @@ const overall = (hist) => {
     plotCsv('./src/plot.R', csv);
 };
 
-const area = (hist) => {
+const area = hist => {
     const provinceData = {
         '420000': {
             title: '湖北',
@@ -184,7 +170,7 @@ const area = (hist) => {
     var csv = 'area-daily.csv';
     var ws = fs.createWriteStream(csv);
     ws.write('# 2019-nCov 确诊\n');
-    ws.write('date,name,value\n');
+    ws.write('time,name,value\n');
     provinceFilter.forEach(p => {
         ws.write(dataSetToCsv(provinceData[p].resolved,
             [
@@ -197,12 +183,11 @@ const area = (hist) => {
     var csv = 'area-derivertive.csv';
     var ws = fs.createWriteStream(csv);
     ws.write('# 2019-nCov 新增确诊\n');
-    ws.write('date,name,value\n');
+    ws.write('time,name,value\n');
     provinceFilter.forEach(p => {
-        const noLast = provinceData[p].resolved.slice(1);
-        ws.write(dataSetToCsv(noLast,
+        ws.write(dataSetToCsv(provinceData[p].resolved.slice(0, -1),
             [
-                ['deltaConfirmed', provinceData[p].title],
+                ['confirmedIncr', provinceData[p].title],
             ]));
     });
     ws.end();
