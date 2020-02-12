@@ -27,8 +27,15 @@ const timeSeriesAppend = (series, d) => {
     series.ymd = ymd;
 
     d.confirmedIncr = 0;
-    if (series.prev)
+    d.suspectedIncr = 0;
+    d.curedIncr = 0;
+    d.deadIncr = 0;
+    if (series.prev) {
         series.prev.confirmedIncr = series.prev.confirmedCount - d.confirmedCount;
+        series.prev.suspectedIncr = series.prev.suspectedCount - d.suspectedCount;
+        series.prev.curedIncr = series.prev.curedCount - d.curedCount;
+        series.prev.deadIncr = series.prev.deadCount - d.deadCount;
+    }
     series.prev = d;
     series.resolved.push(d);
 };
@@ -94,8 +101,8 @@ const overall = (hist) => {
         timeSeriesAppend(series, d);
     });
 
-    const csv = 'overall-daily.csv';
-    const ws = fs.createWriteStream(csv);
+    var csv = 'overall-daily.csv';
+    var ws = fs.createWriteStream(csv);
     ws.write('# 2019-nCov 全国\n');
     ws.write('time,name,value\n');
     ws.write(dataSetToCsv(series.resolved,
@@ -108,10 +115,31 @@ const overall = (hist) => {
         ]));
     ws.end();
     plotCsv('./src/plot.R', csv);
+
+    csv = 'overall-derivertive.csv';
+    ws = fs.createWriteStream(csv);
+    ws.write('# 2019-nCov 全国新增\n');
+    ws.write('time,name,value\n');
+    ws.write(dataSetToCsv(series.resolved,
+        [
+            /*['suspectedIncr', '新增疑似'],*/
+            ['confirmedIncr', '新增确诊'],
+            ['curedIncr', '新增治愈'],
+            ['deadIncr', '新增死亡'],
+            /*[d => { return d.confirmedIncr + d.suspectedIncr; }, '新增疑似+确诊'],*/
+        ]));
+    ws.end();
+    plotCsv('./src/plot.R', csv);
 };
 
 const area = hist => {
     const provinceData = {
+        '000000': {
+            title: '全国',
+            prev: null,
+            ymd: null,
+            resolved: [],
+        },
         '420000': {
             title: '湖北',
             prev: null,
@@ -182,7 +210,7 @@ const area = hist => {
 
     var csv = 'area-derivertive.csv';
     var ws = fs.createWriteStream(csv);
-    ws.write('# 2019-nCov 新增确诊\n');
+    ws.write('# 2019-nCov 地区新增确诊\n');
     ws.write('time,name,value\n');
     provinceFilter.forEach(p => {
         ws.write(dataSetToCsv(provinceData[p].resolved.slice(0, -1),
@@ -194,10 +222,12 @@ const area = hist => {
     plotCsv('./src/plotl.R', csv);
 };
 
-jsonfile.readFile('overall-hist.json', (err, obj) => {
-    overall(obj.results);
-    overall(obj.results);
-});
-jsonfile.readFile('area-hist.json', (err, obj) => {
-    area(obj.results);
+jsonfile.readFile('overall-hist.json', (err, overallHist) => {
+    overall(overallHist.results);
+    jsonfile.readFile('area-hist.json', (err, areaHist) => {
+        overallHist.results.forEach(d => {
+            d.locationId = '000000';
+        });
+        area(areaHist.results.concat(overallHist.results));
+    });
 });

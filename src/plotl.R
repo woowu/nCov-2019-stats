@@ -30,7 +30,7 @@ p <- ggplot(dat, aes(x = time, y = value)) +
           legend.margin = margin(6, 6, 6, 6),
           legend.key.size = unit(1, 'cm'),
           legend.text = element_text(size=18)) +
-    labs(title = title, x = '', y = '');
+    labs(title = title, caption = '数据来源：DXY, Isaac Lin', x = '', y = '');
 
 ggsave(plot = p, file = paste(basename, '.svg', sep = '')
        , width = 21, height = 10);
