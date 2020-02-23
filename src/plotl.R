@@ -29,7 +29,9 @@ p <- ggplot(dat, aes(x = time, y = value)) +
           legend.box.just = 'right',
           legend.margin = margin(6, 6, 6, 6),
           legend.key.size = unit(1, 'cm'),
-          legend.text = element_text(size=18)) +
+          legend.text = element_text(size=18),
+          plot.caption = element_text(hjust=.9),
+          axis.text.x = element_text(angle=90, vjust=0.5, hjust=1)) +
     labs(title = title, caption = '数据来源：DXY, Isaac Lin', x = '', y = '');
 
 ggsave(plot = p, file = paste(basename, '.svg', sep = '')

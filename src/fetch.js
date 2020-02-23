@@ -12,26 +12,32 @@ const superagent = require('superagent');
 const serviceRoot = 'https://lab.isaaclin.cn/nCoV';
 
 const getOverallHist = (cb) => {
+    const url = serviceRoot + '/api/overall';
+    console.log(`fetching from url ${url}`);
     superagent
-        .get(serviceRoot + '/api/overall')
+        .get(url)
         .type('json')
         .set('Content-Type', 'application/json')
         .query({latest: 0})
         .end((err, res) => {
             if (err) throw err;
+            console.log(`returned from url ${url}. code=${res.status}`);
             if (res.status != 200) throw new Error('status ' + res.status);
             cb(JSON.parse(res.text));
         });
 };
 
 const getAreaHist = (cb) => {
+    const url = serviceRoot + '/api/area';
+    console.log(`fetching from url ${url}`);
     superagent
-        .get(serviceRoot + '/api/area')
+        .get(url)
         .type('json')
         .set('Content-Type', 'application/json')
         .query({latest: 0})
         .end((err, res) => {
             if (err) throw err;
+            console.log(`returned from url ${url}. code=${res.status}`);
             if (res.status != 200) throw new Error('status ' + res.status);
             cb(JSON.parse(res.text));
         });
@@ -41,16 +47,20 @@ const handleOverallHist = (json) => {
     json.results.forEach(d => {
         d.localeTime = new Date(d.updateTime).toLocaleString();
     });
-    jsonfile.writeFile('overall-hist.json', json, err => {
+    const filename = 'overall-hist.json';
+    console.log(`saving json file ${filename}`);
+    jsonfile.writeFile(filename, json, err => {
         if (err) throw err;
+        getAreaHist(handleAreaHist);
     });
 };
 
 const handleAreaHist = (json) => {
-    jsonfile.writeFile('area-hist.json', json, err => {
+    const filename = 'area-hist.json';
+    console.log(`saving json file ${filename}`);
+    jsonfile.writeFile(filename, json, err => {
         if (err) throw err;
     });
 };
 
 getOverallHist(handleOverallHist);
-getAreaHist(handleAreaHist);
