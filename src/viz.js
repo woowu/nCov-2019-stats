@@ -103,7 +103,7 @@ const worldLocations = {
         resolved: [],
     },
     '0': {
-        title: '砖石公主号',
+        title: '钻石公主号',
         prev: null,
         ymd: null,
         resolved: [],
