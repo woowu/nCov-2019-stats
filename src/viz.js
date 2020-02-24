@@ -321,8 +321,8 @@ jsonfile.readFile('overall-hist.json', (err, overallHist) => {
             'area-daily-world',
             'COVID-19 累计确诊（其它国家或地区）',
             './src/plot.R');
-        plotArea(areaHist.results.concat(overallHist.results),
-            chinaLocations,
+        plotArea(areaHist.results,
+            worldLocations,
             'confirmedIncr',
             'area-derivertive-world',
             'COVID-19 新增确诊（其它国家或地区）',
