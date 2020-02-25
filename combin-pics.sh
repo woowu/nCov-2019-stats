@@ -1,3 +1,11 @@
 #!/bin/bash
 
-convert overall-daily.png -append overall-derivertive.png -append area-daily.png -append area-derivertive.png -append area-daily-world.png -append area-derivertive-world.png -append all.png
+convert \
+    mainland-hubei.png -append \
+    mainland-hubei-daily.png -append \
+    mainland-ex-hubei.png -append \
+    mainland-ex-hubei-daily.png -append \
+    world-ex-mainland-china.png -append \
+    world-ex-mainland-china-daily.png -append \
+    compare1-daily.png -append \
+    all.png

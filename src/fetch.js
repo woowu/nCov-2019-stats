@@ -44,9 +44,6 @@ const getAreaHist = (cb) => {
 };
 
 const handleOverallHist = (json) => {
-    json.results.forEach(d => {
-        d.localeTime = new Date(d.updateTime).toLocaleString();
-    });
     const filename = 'overall-hist.json';
     console.log(`saving json file ${filename}`);
     jsonfile.writeFile(filename, json, err => {

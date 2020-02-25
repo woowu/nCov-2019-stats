@@ -12,7 +12,11 @@ basename <- substring(csv, 1, nchar(csv) - 4)
 title <- substring(readLines(csv)[1], 3)
 
 dat <- read.csv(csv, comment.char = '#')
-dat$time <- as.Date(as.POSIXct(dat$time, origin='1970-01-01'));
+# Have no ideal why I can only get timezone correctly by manually
+# adjusting the epoch number.
+#
+dat$time <- as.Date(as.POSIXct(dat$time + 3600*24
+                               , origin='1970-01-01 00:00:00 UTC', tz='UTC'));
 
 theme_set(theme_gray(base_size = 28))
 p <- ggplot(dat, aes(x = time, y = value)) +
