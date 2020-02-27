@@ -27,8 +27,8 @@ p <- ggplot(dat, aes(x = time, y = value)) +
     theme(legend.title = element_blank()) +
     theme(panel.grid.major = element_line(size = .8)
           , panel.grid.minor = element_line(size = .8)) +
-    theme(legend.position = c(.1, .95),
-          legend.justification = c('right', 'top'),
+    theme(legend.position = c(.05, .95),
+          legend.justification = c('left', 'top'),
           legend.box.just = 'right',
           legend.margin = margin(6, 6, 6, 6),
           legend.key.size = unit(1, 'cm'),

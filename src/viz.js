@@ -39,28 +39,31 @@ const mainlandExHubeiLocs = {
 
 const worldLocations = {
     '951002': {
-        title: '日本',
+        title: 'Japan',
     },
     '965008': {
-        title: '意大利',
+        title: 'Italy',
     },
     '971002': {
-        title: '美国',
+        title: 'USA',
     },
     '951004': {
-        title: '南韩',
+        title: 'Korea',
     },
     '952009': {
-        title: '新加坡',
+        title: 'Singapore',
     },
     '810000': {
-        title: '香港',
+        title: 'Hongkong',
     },
-    '710000': {
-        title: '台湾',
+    /*'710000': {
+        title: 'Taiwan',
+    },*/
+    '955007': {
+        title: 'Iran',
     },
     '0': {
-        title: '钻石公主号',
+        title: 'Diamond Princess Cruise Ship',
     },
 };
 
@@ -71,10 +74,10 @@ const compare1Locs = {
     },
     */
     'Mainland China Ex. Hubei': {
-        title: '除湖北外的中国大陆',
+        title: 'Mainland China Ex. Hubei',
     },
     'World Ex. Mainland China': {
-        title: '除中国大陆外的世界',
+        title: 'World Ex. Mainland China',
     },
 };
 
@@ -236,9 +239,7 @@ const preProcessHistData = hist => {
      */
     if (hist.results[0].hasOwnProperty('locationId')) {
         group(byTag, 'tag');
-        jsonfile.writeFile('debug1.json', byTag);
         tagCombineTime();
-        jsonfile.writeFile('debug2.json', byTag);
     }
 
     return {byLocation, byTag};
@@ -369,13 +370,13 @@ jsonfile.readFile('overall-hist.json', (err, overallHist) => {
             worldLocations,
             'confirmedCount',
             'world-ex-mainland-china',
-            'COVID-19 累计确诊（其它国家或地区）',
+            'COVID-19 Total Cases: Outside Mainland China',
             './src/plot.R');
         csvArea(area,
             worldLocations,
             'confirmedIncr',
             'world-ex-mainland-china-daily',
-            'COVID-19 每日病例（其它国家或地区）',
+            'COVID-19 Daily Cases: Outside Mainland China',
             './src/plot.R');
 
         jsonfile.writeFile('debug.json', tagged);
@@ -383,7 +384,7 @@ jsonfile.readFile('overall-hist.json', (err, overallHist) => {
             compare1Locs,
             'confirmedIncr',
             'compare1-daily',
-            'COVID-19 每日病例（除湖北外的中国大陆和除中国大陆外的世界）',
+            'COVID-19 Daily Cases: China vs. World',
             './src/plot.R');
     });
 });
