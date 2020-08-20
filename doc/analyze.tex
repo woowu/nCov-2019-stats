@@ -1,0 +1,27 @@
+\documentclass{ctexart}
+\usepackage{fontspec,lipsum}
+\usepackage{amsmath}
+
+\begin{document}
+
+设$N$为全体易感人数，$A(t)$为感染人数，$I(t)$为感染比例：
+\[
+I(t) = \frac{A(t)}{N}
+\]
+
+设病毒自然传播率为$r$（无外力干预下且每个人有足够多的人可以去感染时，每个人可以感染$r$个人）。
+
+新增感染为：
+\begin{align*}
+A(t+1) - A(t) &= A(t) r (1 - I(t)) \\
+\frac{A(t)}{d_t} &= A(t)(1 - I(t)) r \\
+\frac{N I(t)}{d_t} &= N I(t)(1 - I(t)) r \\
+\frac{I(t)}{d_t} &= r I(t)(1 - I(t)) \\
+\end{align*}
+
+因此，$I(t)$是一个Logistic函数（S形函数），即：
+\[
+I(t) = \frac{L}{1 + e^{-k(t - t_0)}}
+\]
+
+\end{document}
